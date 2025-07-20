@@ -8,7 +8,7 @@ const io = new Server(server);
 
 app.use(express.static("public"));
 
-const users = {};
+const users = { 1234: "gaga", 5678: "juda", 2468: "zaza" };
 
 io.on("connection", (socket) => {
   console.log(`A user connected: ${socket.id}`);
@@ -16,6 +16,8 @@ io.on("connection", (socket) => {
   socket.on("set username", (username) => {
     users[socket.id] = username;
     io.emit("server message", `${username} joined`);
+    // io.emit("add_user", username, socket.id);
+    io.emit("all_players", users);
     console.log(`User set: ${username} (${socket.id})`);
   });
 
@@ -24,7 +26,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("A user disconnected");
+    console.log(`User ${users[socket.id]} (${socket.id}) disconnected`);
+    delete users[socket.id];
+    io.emit("remove_user", socket.id);
   });
 });
 
