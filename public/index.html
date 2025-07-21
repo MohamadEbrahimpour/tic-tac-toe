@@ -10,22 +10,16 @@
     <div id="side_left">
         <h3>Players</h3>
         <ul id="players-list">
-            <li>asdaasaaaaaassssssssssasasaassssssssaaaaaaaa</li>
-            <li>aaa</li>
-            <li>dsds</li>
+            <!-- Players will be dynamically added here -->
         </ul>
     </div>
     <div id="whole_container">
-        <ul id="messages"></ul>
-        <form id="form">
-            <!-- <input id="input" autocomplete="off" /> -->
-            <button>Basket</button>
-        </form>
-
+        <canvas id="ttt_board" width="600" height="600"></canvas>
+        <button id="basket">Basket</button>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="client.js"></script>
+    <script type="module" src="client.js"></script>
 </body>
 
 </html>
