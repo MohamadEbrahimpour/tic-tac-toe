@@ -1,3 +1,4 @@
+// import { response } from "express";
 import { click_on_canvas } from "./tic_tac_toe_app.js";
 
 function show_all_players(players_obj) {
@@ -31,18 +32,19 @@ const socket = io();
 const username = prompt("Enter your name:") || "Anonymous";
 socket.emit("set username", username);
 
-const form = document.getElementById("form");
 const basketbtn = document.getElementById("basket");
-const messages = document.getElementById("messages");
 
 basketbtn.addEventListener("click", () => {
   socket.emit("put_basket");
-  console.log("Basket button clicked!");
 });
 
-socket.on("put_basket", function (basket_status) {
-  console.log;
-  basketbtn.disabled = basket_status;
+socket.on("put_basket", function (response) {
+  const player_li = document.querySelector(
+    `li[data-userid="${response["id"]}"]`
+  );
+  if (response["status"] === true) {
+    player_li.style.color = "green";
+  }
 });
 
 socket.on("add_user", function (username, socket_id) {
@@ -59,5 +61,11 @@ socket.on("all_players", function (players) {
 
 const canvas = document.getElementById("ttt_board");
 canvas.addEventListener("click", (e) => {
-  click_on_canvas(e);
+  socket.emit("player_turn", "", (response) => {
+    if (response === true) {
+      console.log("Player's turn confirmed");
+      click_on_canvas(e);
+    }
+  });
+  // click_on_canvas(e);
 });
