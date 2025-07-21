@@ -10,10 +10,16 @@ app.use(express.static("public"));
 
 const users = {};
 let waiting_list = [];
+let x_or_y = 0;
 
 function check_player_turn(id) {
   const exists = waiting_list.slice(0, 2).some((player) => player.id === id);
-  if (exists) {
+  const index = waiting_list.findIndex((player) => player.id === id);
+  console.log(
+    `Checking player turn for ${id}: exists=${exists}, index=${index}, x_or_y=${x_or_y}`
+  );
+  if (exists && index === x_or_y) {
+    x_or_y = (x_or_y + 1) % 2; // Toggle between 0 and 1
     return true;
   }
   return false;
@@ -40,10 +46,9 @@ io.on("connection", (socket) => {
     console.log(waiting_list);
   });
 
-  socket.on("player_turn", (_, callback) => {
+  socket.on("player_turn", (click_event) => {
     const is_his_turn = check_player_turn(socket.id);
-    console.log(`Player turn checked for ${socket.id}: ${is_his_turn}`);
-    callback(is_his_turn);
+    io.emit("player_turn", { is_his_turn, click_event });
   });
 
   socket.on("disconnect", () => {

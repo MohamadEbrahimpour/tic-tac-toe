@@ -9,6 +9,34 @@ let board = Array(size)
 let currentPlayer = "X";
 let gameOver = false;
 
+function draw_x_o(x, y, player) {
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      const x = col * cellSize;
+      const y = row * cellSize;
+      const val = board[row][col];
+      if (val === "X") {
+        ctx.beginPath();
+        ctx.moveTo(x + 10, y + 10);
+        ctx.lineTo(x + cellSize - 10, y + cellSize - 10);
+        ctx.moveTo(x + cellSize - 10, y + 10);
+        ctx.lineTo(x + 10, y + cellSize - 10);
+        ctx.stroke();
+      } else if (val === "O") {
+        ctx.beginPath();
+        ctx.arc(
+          x + cellSize / 2,
+          y + cellSize / 2,
+          cellSize / 2 - 10,
+          0,
+          Math.PI * 2
+        );
+        ctx.stroke();
+      }
+    }
+  }
+}
+
 function drawBoard() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.lineWidth = 2;
@@ -76,13 +104,20 @@ function getWinner() {
   return null;
 }
 
-export function click_on_canvas(e) {
-  // canvas.addEventListener("click", (e) => {
+export function get_canvas_coor(click_coor) {
+  const rect = canvas.getBoundingClientRect();
+  const x = click_coor["x"] - rect.left;
+  const y = click_coor["y"] - rect.top;
+  const col = Math.floor(x / cellSize);
+  const row = Math.floor(y / cellSize);
+}
+
+export function click_on_canvas(click_coor) {
   if (gameOver) return;
 
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  const x = click_coor["x"] - rect.left;
+  const y = click_coor["y"] - rect.top;
   const col = Math.floor(x / cellSize);
   const row = Math.floor(y / cellSize);
 
@@ -99,7 +134,6 @@ export function click_on_canvas(e) {
     }
     drawBoard();
   }
-  // });
 }
 
 drawBoard();

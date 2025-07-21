@@ -60,12 +60,16 @@ socket.on("all_players", function (players) {
 });
 
 const canvas = document.getElementById("ttt_board");
-canvas.addEventListener("click", (e) => {
-  socket.emit("player_turn", "", (response) => {
-    if (response === true) {
-      console.log("Player's turn confirmed");
-      click_on_canvas(e);
-    }
-  });
-  // click_on_canvas(e);
+canvas.addEventListener("click", (click_event) => {
+  const clickData = {
+    x: click_event.clientX,
+    y: click_event.clientY,
+  };
+  socket.emit("player_turn", clickData);
+});
+
+socket.on("player_turn", function (response) {
+  if (response["is_his_turn"] === true) {
+    click_on_canvas(response["click_event"]);
+  }
 });
