@@ -1,3 +1,5 @@
+import { click_on_canvas } from "./tic_tac_toe_app.js";
+
 function show_all_players(players_obj) {
   const playerList = document.getElementById("players-list");
   playerList.innerHTML = "";
@@ -30,29 +32,17 @@ const username = prompt("Enter your name:") || "Anonymous";
 socket.emit("set username", username);
 
 const form = document.getElementById("form");
-const input = document.getElementById("input");
+const basketbtn = document.getElementById("basket");
 const messages = document.getElementById("messages");
 
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
-  if (input.value) {
-    socket.emit("chat message", input.value);
-    input.value = "";
-  }
+basketbtn.addEventListener("click", () => {
+  socket.emit("put_basket");
+  console.log("Basket button clicked!");
 });
 
-socket.on("chat message", function ({ user, msg }) {
-  const item = document.createElement("li");
-  item.innerHTML = `<strong>${user}:</strong> ${msg}`;
-  messages.appendChild(item);
-  messages.scrollTop = messages.scrollHeight;
-});
-
-socket.on("server message", function (msg) {
-  const item = document.createElement("li");
-  item.className = "server-message";
-  item.textContent = msg;
-  messages.appendChild(item);
+socket.on("put_basket", function (basket_status) {
+  console.log;
+  basketbtn.disabled = basket_status;
 });
 
 socket.on("add_user", function (username, socket_id) {
@@ -64,6 +54,10 @@ socket.on("remove_user", function (socket_id) {
 });
 
 socket.on("all_players", function (players) {
-  // const players_list = Object.values(players);
   show_all_players(players);
+});
+
+const canvas = document.getElementById("ttt_board");
+canvas.addEventListener("click", (e) => {
+  click_on_canvas(e);
 });

@@ -9,6 +9,7 @@ const io = new Server(server);
 app.use(express.static("public"));
 
 const users = { 1234: "gaga", 5678: "juda", 2468: "zaza" };
+let waiting_list = [];
 
 io.on("connection", (socket) => {
   console.log(`A user connected: ${socket.id}`);
@@ -21,13 +22,24 @@ io.on("connection", (socket) => {
     console.log(`User set: ${username} (${socket.id})`);
   });
 
-  socket.on("chat message", (msg) => {
-    io.emit("chat message", msg);
+  socket.on("put_basket", () => {
+    const exists = waiting_list.some((player) => player.id === socket.id);
+    if (!exists) {
+      waiting_list.push({ id: socket.id, name: users[socket.id] });
+      io.emit("put_basket", false);
+    }
+    io.emit("put_basket", true);
+    console.log(waiting_list);
   });
 
   socket.on("disconnect", () => {
     console.log(`User ${users[socket.id]} (${socket.id}) disconnected`);
     delete users[socket.id];
+    // delete from waitinglist
+    const index = waiting_list.findIndex((player) => player.id === socket.id);
+    if (index !== -1) {
+      waiting_list.splice(index, 1);
+    }
     io.emit("remove_user", socket.id);
   });
 });
